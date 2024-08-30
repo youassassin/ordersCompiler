@@ -1,0 +1,10 @@
+{
+    "/squarespace": {
+        "target": "https://api.squarespace.com",
+        "secure": false,
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/squarespace": ""
+        }
+    }
+}
