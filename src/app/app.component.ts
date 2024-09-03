@@ -56,4 +56,16 @@ export class AppComponent {
     console.log(this.tillDate)
     this.title = 'switch';
   }
+  doStuff() {
+    const input = {
+      range: 'raw_data!B1:B2',
+      majorDimension: 'ROWS',
+      values: [
+        ['ay', 'yo']
+      ]
+    };
+    this.service.setData(input).subscribe(data => {
+      console.log(data);
+    });
+  }
 }
