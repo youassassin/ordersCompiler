@@ -4,7 +4,7 @@
 <input type="button" value="do google!" (click)="doStuff()">
 
 <!--Add buttons to initiate auth sequence and sign out-->
-<button id="authorize_button" onclick="handleAuthClick()">{{authButtonText}}</button>
-<button id="signout_button" onclick="handleSignoutClick()">{{signOutButtonText}}</button>
+<button id="authorize_button" (click)="handleAuthClick()">Authorize</button>
+<button id="signout_button" (click)="handleSignoutClick()">Sign out</button>
 
 {{content}}

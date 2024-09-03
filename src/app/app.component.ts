@@ -9,6 +9,7 @@ import { Item } from './item.model';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  content = '';
   title = 'ordersCompiler';
   tillDate = new Date('07/30/2024');
   programs = new Map<string, string>();
@@ -64,11 +65,14 @@ export class AppComponent {
         ['ay', 'yo']
       ]
     };
-    this.service.setData(input).subscribe(data => {
+    this.service.setData(input).then(data => {
       console.log(data);
     });
   }
   handleAuthClick() {
     this.service.signIn();
+  }
+  handleSignoutClick() {
+
   }
 }

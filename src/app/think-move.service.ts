@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GoogleApiService, GoogleAuthService } from 'ng-gapi';
 import { map, Observable } from 'rxjs';
-// import * as gapi from 'gapi';
+import * as gapi from 'gapi';
 
 @Injectable({
   providedIn: 'root'
@@ -78,12 +78,12 @@ export class ThinkMoveService {
       return data;
     }));
   }
-  setData(request: any): Observable<any> {
+  async setData(request: any): Promise<Observable<any>> {
     const sheets = '1zzbGWnHtvWkZsvmEAy4iCPZmC_i-y4EX72RASEHBzfE';
-    // await gapi.client.init({
-    //   apiKey: this.GAPI,
-    //   discoveryDocs: [this.DISCOVERY_DOC]
-    // });
+    await gapi.client.init({
+      apiKey: this.GAPI,
+      discoveryDocs: [this.DISCOVERY_DOC]
+    });
     return this.http.put(this.sheetsUrl + '/' + sheets + '/values/' + request.range, request, { headers: new HttpHeaders(this.headerG) }).pipe(map(data => {
       return data;
     }));
