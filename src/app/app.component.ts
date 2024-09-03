@@ -68,4 +68,7 @@ export class AppComponent {
       console.log(data);
     });
   }
+  handleAuthClick() {
+    this.service.signIn();
+  }
 }

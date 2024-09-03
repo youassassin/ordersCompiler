@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { GoogleApiService, GoogleAuthService } from 'ng-gapi';
 import { map, Observable } from 'rxjs';
 // import * as gapi from 'gapi';
 
@@ -34,7 +35,32 @@ export class ThinkMoveService {
   }
 
 
-  constructor(private http: HttpClient) {
+  public static SESSION_STORAGE_KEY: string = 'accessToken';
+  private user: any;
+
+  constructor(private http: HttpClient, private googleAuth: GoogleAuthService) {
+  }
+
+  public getToken(): string | null {
+    let token: string | null = sessionStorage.getItem(ThinkMoveService.SESSION_STORAGE_KEY);
+    if (!token) {
+      throw new Error("no token set , authentication required");
+    }
+    return sessionStorage.getItem(ThinkMoveService.SESSION_STORAGE_KEY);
+  }
+
+  public signIn(): void {
+    this.googleAuth.getAuth()
+      .subscribe((auth: { signIn: () => Promise<any>; }) => {
+        auth.signIn().then((res: any) => this.signInSuccessHandler(res));
+      });
+  }
+
+  private signInSuccessHandler(res: any) {
+    this.user = res;
+    sessionStorage.setItem(
+      ThinkMoveService.SESSION_STORAGE_KEY, res.getAuthResponse().access_token
+    );
   }
 
   getOrders(): Observable<any> {
