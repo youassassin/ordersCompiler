@@ -37,7 +37,7 @@ package-lock.json
 /libpeerconnection.log
 testem.log
 /typings
-/assets/local
+src/assets/local/*
 
 # System files
 .DS_Store
