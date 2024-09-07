@@ -1,10 +1,43 @@
 <router-outlet></router-outlet>
 {{title}}
-<input type="button" value="do work!" (click)="doWork()">
-<input type="button" value="do google!" (click)="doStuff()">
+<input type="button" value="get orders" (click)="getOrders()">
+<input type="button" value="post raw data" (click)="postRawdata()">
 
-<!--Add buttons to initiate auth sequence and sign out-->
-<button id="authorize_button" (click)="handleAuthClick()">Authorize</button>
-<button id="signout_button" (click)="handleSignoutClick()">Sign out</button>
-
-{{content}}
+<button (click)="handleSigninClick()">Log in</button>
+<button (click)="handleSignoutClick()">Sign out</button>
+<button (click)="showPrograms()">showPrograms</button>
+<br />
+<br />
+<div *ngFor="let order of orders">
+    <div *ngIf="order.items.length > 1">
+        date: {{order.orderDate}} <br />
+        modifiedOn: {{order.modifiedOn}} <br />
+        number: {{order.orderNumber}} <br />
+        orderId: {{order.orderId}} <br />
+        <div *ngFor="let item of order.items; let i = index">
+            item-{{i+1}}:<br />
+            <div *ngIf="item.studentName">....studentName: {{item.studentName}}<br /> </div>
+            <div *ngIf="item.grade">....grade: {{item.grade}}<br /> </div>
+            <div *ngIf="item.teacher">....teacher: {{item.teacher}}<br /> </div>
+            <div *ngIf="item.programName">....programName: {{item.programName}} ({{item.programId}})<br /> </div>
+            <div *ngIf="item.pricePaid">....pricePaid: {{item.pricePaid}}<br /> </div>
+            <div *ngIf="item.dropoff">....dropoff: {{item.dropoff}}<br /> </div>
+            <div *ngIf="item.allergies">....allergies: {{item.allergies}}<br /> </div>
+            <div *ngIf="item.city">....city: {{item.city}}<br /> </div>
+            <div *ngIf="item.coach">....coach: {{item.coach}}<br /></div>
+            <div *ngIf="item.uscfId">....uscfId: {{item.uscfId}} <br /></div>
+            <div *ngIf="item.school">....school: {{item.school}} <br /></div>
+            <div *ngIf="item.address">....address: {{item.address}} <br /></div>
+            <div *ngIf="item.dob">....dob: {{item.dob}} <br /></div>
+            <div *ngIf="item.hasBye">....hasBye: {{item.hasBye}} <br /></div>
+            <div *ngIf="item.uscfExpiry">....uscfExpiry: {{item.uscfExpiry}} <br /></div>
+            <div *ngIf="item.phone">....phone: {{item.phone}} <br /></div>
+            <div *ngIf="item.email">....email: {{item.email}} <br /></div>
+            <div *ngIf="item.parentName">....parentName: {{item.parentName}} <br /></div>
+        </div>
+        totalPaid: {{order.totalPaid.value}} <br />
+        <div *ngIf="order.discount">discount: {{order.discount.value}} {{order.discount.type}} <br /></div>
+        <div *ngIf="order.refunded">refunded: {{order.refunded.value}}<br /></div>
+        <br />
+    </div>
+</div>

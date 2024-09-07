@@ -1,21 +1,34 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { GoogleApiService, GoogleAuthService } from 'ng-gapi';
+import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import * as gapi from 'gapi';
+import { AuthGoogleService } from './services/auth-google.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThinkMoveService {
-  //sp: 942622ac-1113-4ca3-8a9d-11472ba8330c
+  //sp: d0a9b13b-86d0-4f3a-aae5-0ccfcec73a0d
   //goog api: AIzaSyDmVS5OJmfFALiEaVWuQUsGb9cbwCQzVzc
 
   ordersUrl = '/squarespace/1.0/commerce/orders';
+  productsUrl = '/squarespace/1.0/commerce/products';
   sheetsUrl = '/google/v4/spreadsheets';
   rawDataId = '647471555';
   DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
   GAPI = 'AIzaSyDmVS5OJmfFALiEaVWuQUsGb9cbwCQzVzc';
+  SCOPE = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive.file'
+  ];
+  SHEETS_ID = '1zzbGWnHtvWkZsvmEAy4iCPZmC_i-y4EX72RASEHBzfE';
+
+  // jwt = new JWT({
+  //   email: creds.client_email,
+  //   key: creds.private_key,
+  //   scopes: this.SCOPE,
+  // });
+
+  // doc = new GoogleSpreadsheet(this.SHEETS_ID, this.jwt);
 
   header = {
     'Content-Type': 'application/json',
@@ -23,7 +36,7 @@ export class ThinkMoveService {
     'Access-Control-Allow-Headers': 'Content-Type, Accept',
     'Access-Control-Allow-Methods': 'GET, POST',
     'Access-Control-Allow-Origin': '*',
-    'Authorization': 'Bearer 942622ac-1113-4ca3-8a9d-11472ba8330c',
+    'Authorization': 'Bearer d0a9b13b-86d0-4f3a-aae5-0ccfcec73a0d',
   }
   headerG = {
     'Content-Type': 'application/json',
@@ -31,15 +44,15 @@ export class ThinkMoveService {
     'Access-Control-Allow-Headers': 'Content-Type, Accept',
     'Access-Control-Allow-Methods': 'GET, POST, PUT',
     'Access-Control-Allow-Origin': '*',
-    'X-goog-api-key': 'AIzaSyDmVS5OJmfFALiEaVWuQUsGb9cbwCQzVzc',
+    'Authorization': 'Bearer ',
   }
 
+  http = inject(HttpClient);
+  authService = inject(AuthGoogleService);
 
   public static SESSION_STORAGE_KEY: string = 'accessToken';
   private user: any;
 
-  constructor(private http: HttpClient, private googleAuth: GoogleAuthService) {
-  }
 
   public getToken(): string | null {
     let token: string | null = sessionStorage.getItem(ThinkMoveService.SESSION_STORAGE_KEY);
@@ -47,13 +60,6 @@ export class ThinkMoveService {
       throw new Error("no token set , authentication required");
     }
     return sessionStorage.getItem(ThinkMoveService.SESSION_STORAGE_KEY);
-  }
-
-  public signIn(): void {
-    this.googleAuth.getAuth()
-      .subscribe((auth: { signIn: () => Promise<any>; }) => {
-        auth.signIn().then((res: any) => this.signInSuccessHandler(res));
-      });
   }
 
   private signInSuccessHandler(res: any) {
@@ -68,6 +74,7 @@ export class ThinkMoveService {
       return data;
     }));
   }
+
   getNextOrders(cursor: string): Observable<any> {
     return this.http.get(this.ordersUrl + '?cursor=' + cursor, { headers: new HttpHeaders(this.header) }).pipe(map(data => {
       return data;
@@ -78,13 +85,13 @@ export class ThinkMoveService {
       return data;
     }));
   }
-  async setData(request: any): Promise<Observable<any>> {
-    const sheets = '1zzbGWnHtvWkZsvmEAy4iCPZmC_i-y4EX72RASEHBzfE';
-    await gapi.client.init({
-      apiKey: this.GAPI,
-      discoveryDocs: [this.DISCOVERY_DOC]
-    });
-    return this.http.put(this.sheetsUrl + '/' + sheets + '/values/' + request.range, request, { headers: new HttpHeaders(this.headerG) }).pipe(map(data => {
+  setData(request: any) {
+    this.headerG['Authorization'] = 'Bearer ' + this.authService.getToken();
+    const valueInputOption = 'RAW';
+    return this.http.put<any>(
+      this.sheetsUrl + '/' + this.SHEETS_ID + '/values/' + request.range + '?valueInputOption=' + valueInputOption,
+      request, { headers: new HttpHeaders(this.headerG) }
+    ).pipe(map(data => {
       return data;
     }));
   }

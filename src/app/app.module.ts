@@ -3,18 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { ThinkMoveService } from './think-move.service';
-import { GoogleApiModule, NG_GAPI_CONFIG, NgGapiClientConfig } from 'ng-gapi';
+import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { DatePipe } from '@angular/common';
+import { GlobalsService } from './services/globals.service';
 
-let gapiClientConfig: NgGapiClientConfig = {
-  client_id: '191198197734-ubv9pq7dlgqp14hvtelqeuf5g2mvtddd.apps.googleusercontent.com',
-  discoveryDocs: ['https://analyticsreporting.googleapis.com/$discovery/rest?version=v4'],
-  scope: [
-    'https://www.googleapis.com/auth/spreadsheets.readonly',
-    'https://www.googleapis.com/auth/spreadsheets'
-  ].join(' ')
-};
 
 @NgModule({
   declarations: [
@@ -23,13 +17,13 @@ let gapiClientConfig: NgGapiClientConfig = {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
-    GoogleApiModule.forRoot({
-      provide: NG_GAPI_CONFIG,
-      useValue: gapiClientConfig
-    }),
   ],
-  providers: [ThinkMoveService],
+  providers: [ThinkMoveService,
+    GlobalsService,
+    DatePipe,
+    provideOAuthClient(),
+    provideHttpClient(),
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
