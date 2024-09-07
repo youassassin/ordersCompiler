@@ -9,6 +9,9 @@ import { LoginComponent } from './login/login/login.component';
 import { RawDataRow } from './tables/raw-data-row.model';
 import { GlobalsService } from './services/globals.service';
 import { Paid } from './paid.model';
+import { ParsedAcademyRow } from './tables/parsed-academy-row';
+import { ParsedTournamentRow } from './tables/parsed-tournament-row';
+import { ParsedRefundedRow } from './tables/parsed-refunded-row';
 
 @Component({
   selector: 'app-root',
@@ -82,6 +85,10 @@ export class AppComponent implements OnInit {
     return grade;
   }
 
+  getStripe() {
+
+  }
+
   getOrders() {
     this.service.getOrders().subscribe(data => {
       data.result.forEach((element: any) => {
@@ -108,7 +115,6 @@ export class AppComponent implements OnInit {
     console.log(latest.getTime() - this.tillDate.getTime())
     if (latest.getTime() - this.tillDate.getTime() > 0) {
       this.service.getNextOrders(cursor).subscribe(async data => {
-        console.log(data)
         data.result.forEach((element: any) => {
           this.orders.push(this.parseOrder(element));
         });
@@ -160,14 +166,87 @@ export class AppComponent implements OnInit {
       values: [['']]
     };
     const rows: string[][] = [];
+    const rdrData: RawDataRow[] = [];
     this.orders.forEach(order => {
       order.items.forEach((item, index) => {
-        const rdw = RawDataRow.parseOrder(order, index, this.datePipe);
-        rows.push(rdw.getAsArray());
+        const rdr = RawDataRow.parseOrder(order, index, this.datePipe);
+        rdrData.push(rdr);
+        rows.push(rdr.getAsArray());
       });
     });
     rawdata.values = rows;
     this.service.setData(rawdata).subscribe(data => {
+      console.log(data);
+    });
+    this.postParsedAcademy(rdrData);
+    this.postParsedTournament(rdrData);
+    this.postParsedRefund(rdrData);
+    this.postParsedOther(rdrData);
+  }
+  postParsedAcademy(rdr: RawDataRow[]) {
+    const parseddata = {
+      range: 'parsed academy!A2',
+      majorDimension: 'ROWS',
+      values: [['']]
+    };
+    const rows: string[][] = [];
+    rdr.forEach(rd => {
+      const par = ParsedAcademyRow.parseRawDataRow(rd);
+      if (rd.refunded === '' && !Item.nonAcadmey.includes(rd.programId))
+        rows.push(par.getAsArray());
+    });
+    parseddata.values = rows;
+    this.service.setDataNotRaw(parseddata).subscribe(data => {
+      console.log(data);
+    });
+  }
+  postParsedTournament(rdr: RawDataRow[]) {
+    const parsedTournyData = {
+      range: 'parsed tournament!A2',
+      majorDimension: 'ROWS',
+      values: [['']]
+    };
+    const rows: string[][] = [];
+    rdr.forEach(rd => {
+      const ptr = ParsedTournamentRow.parseRawDataRow(rd);
+      if (rd.refunded === '' && Item.tournaments.includes(rd.programId))
+        rows.push(ptr.getAsArray());
+    });
+    parsedTournyData.values = rows;
+    this.service.setDataNotRaw(parsedTournyData).subscribe(data => {
+      console.log(data);
+    });
+  }
+  postParsedRefund(rdr: RawDataRow[]) {
+    const parsedTournyData = {
+      range: 'parsed refund!A2',
+      majorDimension: 'ROWS',
+      values: [['']]
+    };
+    const rows: string[][] = [];
+    rdr.forEach(rd => {
+      const prr = ParsedRefundedRow.parseRawDataRow(rd);
+      if (rd.refunded !== '')
+        rows.push(prr.getAsArray());
+    });
+    parsedTournyData.values = rows;
+    this.service.setDataNotRaw(parsedTournyData).subscribe(data => {
+      console.log(data);
+    });
+  }
+  postParsedOther(rdr: RawDataRow[]) {
+    const parsedTournyData = {
+      range: 'parsed other!A2',
+      majorDimension: 'ROWS',
+      values: [['']]
+    };
+    const rows: string[][] = [];
+    rdr.forEach(rd => {
+      if (rd.refunded === '' && !Item.tournaments.includes(rd.programId) && Item.nonAcadmey.includes(rd.programId))
+        rows.push(rd.getAsArray());
+    });
+    parsedTournyData.values = rows;
+    this.service.setDataNotRaw(parsedTournyData).subscribe(data => {
       console.log(data);
     });
   }

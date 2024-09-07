@@ -8,6 +8,7 @@ export class RawDataRow {
     studentName: string = '';
     grade: string = '';
     programName: string = '';
+    programId: string = '';
     pricePaidTotal: string = '';
     pricePaidItem: string = '';
     parentName: string = '';
@@ -25,8 +26,6 @@ export class RawDataRow {
     dob: string = '';
     hasBye: string = '';
     uscfExpiry: string = '';
-    hasDiscount: boolean = false;
-    isMultipleItems: boolean = false;
 
     static parseOrder(order: Order, selectedItem: number, datePipe: DatePipe): RawDataRow {
         const result = new RawDataRow();
@@ -38,6 +37,7 @@ export class RawDataRow {
         result.studentName = order.items[selectedItem].studentName;
         result.grade = order.items[selectedItem].grade;
         result.programName = order.items[selectedItem].programName;
+        result.programId = order.items[selectedItem].programId;
         result.pricePaidTotal = order.totalPaid.value;
         result.pricePaidItem = order.items[selectedItem].pricePaid;
         result.parentName = order.items[selectedItem].parentName;
@@ -46,11 +46,9 @@ export class RawDataRow {
         result.dropoff = order.items[selectedItem].dropoff;
         result.allergies = order.items[selectedItem].allergies;
         result.teacher = order.items[selectedItem].teacher ? order.items[selectedItem].teacher : '';
-        result.hasDiscount = Boolean(order.discount);
         result.discount = order.discount ? order.discount.value : '';
         result.discountDescription = order.discount ? order.discount.type : '';
         result.refunded = order.refunded ? order.refunded.value : '';
-        result.isMultipleItems = order.items.length > 1;
         result.uscfId = order.items[selectedItem].uscfId ? order.items[selectedItem].uscfId : '';
         result.school = order.items[selectedItem].school ? order.items[selectedItem].school : '';
         result.address = order.items[selectedItem].address ? order.items[selectedItem].address : '';
@@ -63,15 +61,16 @@ export class RawDataRow {
     getAsArray(): string[] {
         const result = [
             this.orderDate,
-            this.modifiedOn ? this.modifiedOn : '',
+            this.modifiedOn,
             this.orderNumber,
             this.studentName,
             this.grade,
             this.programName,
+            this.programId,
             this.pricePaidItem,
             this.pricePaidTotal,
-            this.hasDiscount ? this.discount : '',
-            this.hasDiscount ? this.discountDescription : '',
+            this.discount,
+            this.discountDescription,
             this.refunded,
             this.parentName,
             this.phone,

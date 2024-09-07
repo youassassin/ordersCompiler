@@ -95,4 +95,14 @@ export class ThinkMoveService {
       return data;
     }));
   }
+  setDataNotRaw(request: any) {
+    this.headerG['Authorization'] = 'Bearer ' + this.authService.getToken();
+    const valueInputOption = 'USER_ENTERED';
+    return this.http.put<any>(
+      this.sheetsUrl + '/' + this.SHEETS_ID + '/values/' + request.range + '?valueInputOption=' + valueInputOption,
+      request, { headers: new HttpHeaders(this.headerG) }
+    ).pipe(map(data => {
+      return data;
+    }));
+  }
 }

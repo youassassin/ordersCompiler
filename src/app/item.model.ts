@@ -12,11 +12,21 @@ export class Item {
     static readonly GREENVILLE_ACADEMY_WAITLIST_ID = '66c679102b75a5121507e7c4';
     static readonly SOUTH_CAROLINA_ASSOCIATION_DUES_ID = '64f1dcdbcb22ab397673e988';
     static readonly COLUMBIA_CHESS_CAMP_ID = '640a0c6d73d1773690375e24';
-    readonly tournaments = [
+    static readonly ADVANCED_PLACEMENT_FISHER = '66cca57a936c426e7bcc73fd';
+    static readonly nonAcadmey = [
+        Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
+        Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID,
+        Item.KLAUS_TOURNAMENT_ID,
+        Item.PRIVATE_LESSON_ID,
+        Item.SOUTH_CAROLINA_ASSOCIATION_DUES_ID,
+        Item.COLUMBIA_CHESS_CAMP_ID,
+        Item.ADVANCED_PLACEMENT_FISHER
+    ];
+    static readonly tournaments = [
         Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
         Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID,
         Item.KLAUS_TOURNAMENT_ID
-    ];
+    ]
     readonly studentTournaments = [
         Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
         Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID
@@ -26,7 +36,7 @@ export class Item {
     grade: string = '';
     teacher: string = '';
     programName: string = '';
-    programId?: string;
+    programId: string = '';
     pricePaid: string = '';
     dropoff: string = '';
     allergies: string = '';
