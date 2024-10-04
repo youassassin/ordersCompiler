@@ -25,6 +25,7 @@ export class RawDataRow {
     address: string = '';
     dob: string = '';
     hasBye: string = '';
+    stripeFee: string = '';
     uscfExpiry: string = '';
 
     static parseOrder(order: Order, selectedItem: number, datePipe: DatePipe): RawDataRow {
@@ -49,6 +50,7 @@ export class RawDataRow {
         result.discount = order.discount ? order.discount.value : '';
         result.discountDescription = order.discount ? order.discount.type : '';
         result.refunded = order.refunded ? order.refunded.value : '';
+        result.stripeFee = order.stripeFee;
         result.uscfId = order.items[selectedItem].uscfId ? order.items[selectedItem].uscfId : '';
         result.school = order.items[selectedItem].school ? order.items[selectedItem].school : '';
         result.address = order.items[selectedItem].address ? order.items[selectedItem].address : '';
@@ -69,6 +71,7 @@ export class RawDataRow {
             this.programId,
             this.pricePaidItem,
             this.pricePaidTotal,
+            this.stripeFee,
             this.discount,
             this.discountDescription,
             this.refunded,

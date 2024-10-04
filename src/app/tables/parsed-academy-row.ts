@@ -17,6 +17,7 @@ export class ParsedAcademyRow {
     teacher: string = '';
     discount: string = '';
     discountDescription: string = '';
+    stripeFee: string = '';
 
     static parseRawDataRow(rdr: RawDataRow): ParsedAcademyRow {
         const result = new ParsedAcademyRow();
@@ -36,6 +37,7 @@ export class ParsedAcademyRow {
         result.teacher = rdr.teacher;
         result.discount = rdr.discount;
         result.discountDescription = rdr.discountDescription;
+        result.stripeFee = rdr.stripeFee;
         return result;
     }
 
@@ -86,6 +88,7 @@ export class ParsedAcademyRow {
             this.teacher,
             this.discount,
             this.discountDescription,
+            this.stripeFee,
         ];
         return result;
     }

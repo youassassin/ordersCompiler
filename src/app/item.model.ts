@@ -8,27 +8,36 @@ export class Item {
     static readonly KLAUS_TOURNAMENT_ID = '64f08fa9651cc5686aa1d6d1';
     static readonly GREENVILLE_TOURNAMENT_SEPTEMBER_ID = '65b97b1a6e634657f83cb044';
     static readonly COLUMBIA_TOURNAMENT_AUGUST_ID = '665deb2be8dce0379f0f4f16';
+    static readonly COLUMBIA_TOURNAMENT_JULY_ID = '64517c264e830f762d5689f1';
     static readonly PRIVATE_LESSON_ID = '64ac2dc71118e470e0fff607';
     static readonly GREENVILLE_ACADEMY_WAITLIST_ID = '66c679102b75a5121507e7c4';
     static readonly SOUTH_CAROLINA_ASSOCIATION_DUES_ID = '64f1dcdbcb22ab397673e988';
     static readonly COLUMBIA_CHESS_CAMP_ID = '640a0c6d73d1773690375e24';
-    static readonly ADVANCED_PLACEMENT_FISHER = '66cca57a936c426e7bcc73fd';
+    static readonly GREENVILLE_CHESS_CAMP_ID = '6447e73d0c9a84782859d446';
+    static readonly SUMMER_CAMP_IADAROLA_ID = '669d121971486a5be0ac6d1c';
+    static readonly ADVANCED_PLACEMENT_FISHER_ID = '66cca57a936c426e7bcc73fd';
+    static readonly ADVNACED_PLACEMENT_KENDRICKS_ID = '6606cd2f71c3500e30a76802';
     static readonly nonAcadmey = [
         Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
+        Item.COLUMBIA_TOURNAMENT_JULY_ID,
         Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID,
         Item.KLAUS_TOURNAMENT_ID,
         Item.PRIVATE_LESSON_ID,
         Item.SOUTH_CAROLINA_ASSOCIATION_DUES_ID,
         Item.COLUMBIA_CHESS_CAMP_ID,
-        Item.ADVANCED_PLACEMENT_FISHER
+        Item.GREENVILLE_CHESS_CAMP_ID,
+        Item.ADVANCED_PLACEMENT_FISHER_ID,
+        Item.ADVNACED_PLACEMENT_KENDRICKS_ID
     ];
     static readonly tournaments = [
         Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
         Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID,
+        Item.COLUMBIA_TOURNAMENT_JULY_ID,
         Item.KLAUS_TOURNAMENT_ID
     ]
     readonly studentTournaments = [
         Item.COLUMBIA_TOURNAMENT_AUGUST_ID,
+        Item.COLUMBIA_TOURNAMENT_JULY_ID,
         Item.GREENVILLE_TOURNAMENT_SEPTEMBER_ID
     ];
 

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ThinkMoveService } from './think-move.service';
+import { ThinkMoveService } from './services/think-move.service';
 import { Order } from './order.model';
 import { Item } from './item.model';
 import { AuthGoogleService } from './services/auth-google.service';
@@ -7,12 +7,17 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { LoginComponent } from './login/login/login.component';
 import { RawDataRow } from './tables/raw-data-row.model';
-import { GlobalsService } from './services/globals.service';
 import { Paid } from './paid.model';
 import { ParsedAcademyRow } from './tables/parsed-academy-row';
 import { ParsedTournamentRow } from './tables/parsed-tournament-row';
 import { ParsedRefundedRow } from './tables/parsed-refunded-row';
+import { StripeService } from './services/stripe.service';
 
+export class StripeData {
+  txnId: string = '';
+  fee: number | undefined = 0;
+  orderId: string = '';
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -23,12 +28,14 @@ export class AppComponent implements OnInit {
   private authService = inject(AuthGoogleService);
   private router = inject(Router);
   private datePipe = inject(DatePipe);
-  private globals = inject(GlobalsService);
+  private stripeService = inject(StripeService);
 
   content = '';
   title = 'ordersCompiler';
   tillDate = new Date('07/30/2024');
   orders: Order[] = [];
+  stripeData: StripeData[] = [];
+  transactionMap: Map<string, number> = new Map();
   metaData: string[][] = [];
   programs = new Map<string, string>();
 
@@ -75,10 +82,12 @@ export class AppComponent implements OnInit {
     grade = grade.toLowerCase();
     grade = grade.replace('rising', '');
     grade = grade.replace('grade', '');
+    grade = grade.replace('Going into 6th', '6');
     grade = grade.replace('third', '3');
     grade = grade.replace('second', '2');
     grade = grade.replace('first', '1');
     grade = grade.replace('kindergarten', 'K');
+    grade = grade.replace('Belle 2nd - Lawson Kindergarten', '2&K');
     grade = grade.trim();
     grade = grade.substring(0, 1);
     grade = grade.toUpperCase();
@@ -86,7 +95,77 @@ export class AppComponent implements OnInit {
   }
 
   getStripe() {
+    this.stripeService.getCharges().subscribe(data => {
+      let lastObj: any;
+      data.data.forEach((element: any) => {
+        lastObj = element;
+        const sd = new StripeData;
+        sd.txnId = element.balance_transaction;
+        sd.orderId = element.metadata.orderId;
+        if (sd.orderId)
+          this.stripeData.push(sd);
+      });
+      console.log(data);
+      console.log(this.stripeData);
+      this.getMoreCharges(lastObj.id, new Date(lastObj.created * 1000));
+    });
+    this.stripeService.getBalanceTransactions().subscribe(data => {
+      let lastObj: any;
+      data.data.forEach((element: any) => {
+        this.transactionMap.set(element.id, element.fee);
+        lastObj = element;
+      });
+      this.getMoreTransactions(lastObj.id, new Date(lastObj.created * 1000));
+      console.log(data);
+    });
+  }
 
+  getMoreCharges(cursor: string, latest: Date) {
+    if (latest.getTime() - this.tillDate.getTime() > 0) {
+      this.stripeService.getNextCharges(cursor).subscribe(async data => {
+        data.data.forEach((element: any) => {
+          const sd = new StripeData;
+          sd.txnId = element.balance_transaction;
+          sd.orderId = element.metadata.orderId;
+          if (sd.orderId)
+            this.stripeData.push(sd);
+        });
+
+        console.log(data)
+        const lastObj = data.data[99];
+        await this.getMoreCharges(lastObj.id, new Date(lastObj.created * 1000));
+      });
+    }
+  }
+
+  getMoreTransactions(cursor: string, latest: Date) {
+    if (latest.getTime() - this.tillDate.getTime() > 0) {
+      this.stripeService.getNextBalanceTransactions(cursor).subscribe(async data => {
+        let lastObj: any;
+        data.data.forEach((element: any) => {
+          this.transactionMap.set(element.id, element.fee);
+          lastObj = element;
+        });
+        await this.getMoreTransactions(lastObj.id, new Date(lastObj.created * 1000));
+        console.log(data);
+      });
+    }
+  }
+
+  getMoreStripe() {
+    this.stripeData.forEach(data => {
+      data.fee = this.transactionMap.get(data.txnId);
+    });
+    console.log(this.stripeData);
+    this.orders.forEach(data => {
+      this.stripeData.forEach(value => {
+        if (data.orderNumber === value.orderId) {
+          data.stripeFee = (value.fee ? value.fee / 100 : 0.00) + '';
+          return;
+        }
+      })
+    });
+    console.log(this.orders);
   }
 
   getOrders() {
@@ -112,7 +191,6 @@ export class AppComponent implements OnInit {
   }
 
   getMoreOrders(cursor: string, latest: Date, count: number) {
-    console.log(latest.getTime() - this.tillDate.getTime())
     if (latest.getTime() - this.tillDate.getTime() > 0) {
       this.service.getNextOrders(cursor).subscribe(async data => {
         data.result.forEach((element: any) => {
@@ -235,7 +313,7 @@ export class AppComponent implements OnInit {
     });
   }
   postParsedOther(rdr: RawDataRow[]) {
-    const parsedTournyData = {
+    const parsedOtherData = {
       range: 'parsed other!A2',
       majorDimension: 'ROWS',
       values: [['']]
@@ -245,8 +323,8 @@ export class AppComponent implements OnInit {
       if (rd.refunded === '' && !Item.tournaments.includes(rd.programId) && Item.nonAcadmey.includes(rd.programId))
         rows.push(rd.getAsArray());
     });
-    parsedTournyData.values = rows;
-    this.service.setDataNotRaw(parsedTournyData).subscribe(data => {
+    parsedOtherData.values = rows;
+    this.service.setDataNotRaw(parsedOtherData).subscribe(data => {
       console.log(data);
     });
   }

@@ -19,6 +19,7 @@ export class ParsedTournamentRow {
     pricePaidTotal: string = '';
     discount: string = '';
     discountDescription: string = '';
+    stripeFee: string = '';
 
     static parseRawDataRow(rdr: RawDataRow): ParsedTournamentRow {
         const result = new ParsedTournamentRow();
@@ -40,6 +41,7 @@ export class ParsedTournamentRow {
         result.pricePaidTotal = rdr.pricePaidTotal;
         result.discount = rdr.discount;
         result.discountDescription = rdr.discountDescription;
+        result.stripeFee = rdr.stripeFee;
         return result;
     }
 
@@ -64,6 +66,7 @@ export class ParsedTournamentRow {
             this.school,
             this.discount,
             this.discountDescription,
+            this.stripeFee,
         ];
         return result;
     }

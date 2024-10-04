@@ -11,5 +11,6 @@ export class Order {
     totalPaid: Paid = new Paid;
     discount?: Paid;
     refunded?: Paid;
+    stripeFee: string = '';
     customerEmail: string = '';
 }

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { AuthGoogleService } from './services/auth-google.service';
+import { AuthGoogleService } from './auth-google.service';
 
 @Injectable({
   providedIn: 'root'
